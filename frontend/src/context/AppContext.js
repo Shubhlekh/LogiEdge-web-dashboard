@@ -10,6 +10,7 @@ export const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchCustomers = useCallback(async () => {
     try {
       const res = await customersAPI.getAll();
@@ -19,6 +20,7 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchItems = useCallback(async () => {
     try {
       const res = await itemsAPI.getAll();
@@ -28,6 +30,7 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchInvoices = useCallback(async () => {
     setLoading(true);
     try {

@@ -9,7 +9,7 @@ export default function Items() {
   const [msg, setMsg] = useState(null);
   const [form, setForm] = useState({ item_name: '', selling_price: '', is_active: 'Y' });
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => { fetchItems(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 

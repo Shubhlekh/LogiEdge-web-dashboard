@@ -18,7 +18,7 @@ export default function Billing({ navigate }) {
   useEffect(() => {
     fetchCustomers();
     fetchItems();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeCustomers = customers.filter(c => c.is_active === 'Y');
   const activeItems = items.filter(i => i.is_active === 'Y');

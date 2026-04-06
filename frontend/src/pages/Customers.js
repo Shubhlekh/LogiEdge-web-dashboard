@@ -12,7 +12,7 @@ export default function Customers() {
     cust_gst: '', is_active: 'Y'
   });
 
-  useEffect(() => { fetchCustomers(); }, []);
+  useEffect(() => { fetchCustomers(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 

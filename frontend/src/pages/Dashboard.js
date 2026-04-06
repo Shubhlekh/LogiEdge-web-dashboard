@@ -20,7 +20,7 @@ export default function Dashboard({ navigate }) {
       setInvoices(r.data.data);
       setLoading(false);
     });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = async () => {
     if (!searchId.trim()) return;
