@@ -38,4 +38,22 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PATCH update item status
+router.patch('/:code/status', async (req, res) => {
+  const { is_active } = req.body;
+  if (!['Y', 'N'].includes(is_active))
+    return res.status(400).json({ success: false, message: 'is_active must be Y or N' });
+  try {
+    const result = await pool.query(
+      'UPDATE items SET is_active = $1 WHERE item_code = $2 RETURNING *',
+      [is_active, req.params.code]
+    );
+    if (result.rows.length === 0)
+      return res.status(404).json({ success: false, message: 'Item not found' });
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;
