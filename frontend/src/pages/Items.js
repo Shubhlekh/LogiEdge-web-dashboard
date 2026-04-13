@@ -6,6 +6,7 @@ export default function Items() {
   const { items, fetchItems } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [togglingCode, setTogglingCode] = useState(null);
   const [msg, setMsg] = useState(null);
   const [form, setForm] = useState({ item_name: '', selling_price: '', is_active: 'Y' });
 
@@ -30,6 +31,23 @@ export default function Items() {
       setMsg({ type: 'error', text: e.response?.data?.message || 'Failed to create item.' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleStatus = async (item) => {
+    const newStatus = item.is_active === 'Y' ? 'N' : 'Y';
+    setTogglingCode(item.item_code);
+    try {
+      await itemsAPI.updateStatus(item.item_code, newStatus);
+      await fetchItems();
+      setMsg({
+        type: 'success',
+        text: `${item.item_name} marked as ${newStatus === 'Y' ? 'Active' : 'In-Active'}.`
+      });
+    } catch (e) {
+      setMsg({ type: 'error', text: 'Failed to update status.' });
+    } finally {
+      setTogglingCode(null);
     }
   };
 
@@ -73,20 +91,56 @@ export default function Items() {
           </div>
         )}
 
-        {msg && !showForm && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
+        {msg && !showForm && (
+          <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>
+        )}
 
         <div className="items-grid">
           {items.map(item => (
-            <div key={item.item_code} className="item-card">
-              <div>
-                <div className="item-card-name">{item.item_name}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3 }}>
-                  ₹{parseFloat(item.selling_price).toLocaleString('en-IN')}
+            <div key={item.item_code} className="item-card" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div className="item-card-name">{item.item_name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3 }}>
+                    ₹{parseFloat(item.selling_price).toLocaleString('en-IN')}
+                  </div>
                 </div>
+                <span className={`badge ${item.is_active === 'Y' ? 'badge-active' : 'badge-inactive'}`}>
+                  {item.is_active === 'Y' ? 'Active' : 'In-Active'}
+                </span>
               </div>
-              <span className={`badge ${item.is_active === 'Y' ? 'badge-active' : 'badge-inactive'}`}>
-                {item.is_active === 'Y' ? 'Active' : 'In-Active'}
-              </span>
+              <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>Status:</span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button
+                    disabled={togglingCode === item.item_code}
+                    onClick={() => item.is_active !== 'Y' && handleToggleStatus(item)}
+                    style={{
+                      padding: '4px 10px', fontSize: 11, fontWeight: 600, borderRadius: 6,
+                      cursor: item.is_active === 'Y' ? 'default' : 'pointer',
+                      background: item.is_active === 'Y' ? 'rgba(34,197,94,0.2)' : 'var(--bg-primary)',
+                      color: item.is_active === 'Y' ? 'var(--active-badge)' : 'var(--text-muted)',
+                      border: item.is_active === 'Y' ? '1px solid rgba(34,197,94,0.4)' : '1px solid var(--border)',
+                      opacity: togglingCode === item.item_code ? 0.5 : 1, transition: 'all 0.18s',
+                    }}
+                  >✓ Active</button>
+                  <button
+                    disabled={togglingCode === item.item_code}
+                    onClick={() => item.is_active !== 'N' && handleToggleStatus(item)}
+                    style={{
+                      padding: '4px 10px', fontSize: 11, fontWeight: 600, borderRadius: 6,
+                      cursor: item.is_active === 'N' ? 'default' : 'pointer',
+                      background: item.is_active === 'N' ? 'rgba(239,68,68,0.2)' : 'var(--bg-primary)',
+                      color: item.is_active === 'N' ? 'var(--inactive-badge)' : 'var(--text-muted)',
+                      border: item.is_active === 'N' ? '1px solid rgba(239,68,68,0.4)' : '1px solid var(--border)',
+                      opacity: togglingCode === item.item_code ? 0.5 : 1, transition: 'all 0.18s',
+                    }}
+                  >✕ In-Active</button>
+                </div>
+                {togglingCode === item.item_code && (
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Updating...</span>
+                )}
+              </div>
             </div>
           ))}
         </div>
