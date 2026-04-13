@@ -56,6 +56,24 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PATCH update customer status
+router.patch('/:id/status', async (req, res) => {
+  const { is_active } = req.body;
+  if (!['Y', 'N'].includes(is_active))
+    return res.status(400).json({ success: false, message: 'is_active must be Y or N' });
+  try {
+    const result = await pool.query(
+      'UPDATE customers SET is_active = $1 WHERE cust_id = $2 RETURNING *',
+      [is_active, req.params.id]
+    );
+    if (result.rows.length === 0)
+      return res.status(404).json({ success: false, message: 'Customer not found' });
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // GET invoices for a specific customer
 router.get('/:id/invoices', async (req, res) => {
   try {
