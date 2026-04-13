@@ -8,12 +8,14 @@ export const customersAPI = {
   getAll: () => api.get('/customers'),
   getOne: (id) => api.get(`/customers/${id}`),
   create: (data) => api.post('/customers', data),
+  updateStatus: (id, is_active) => api.patch(`/customers/${id}/status`, { is_active }),
   getInvoices: (id) => api.get(`/customers/${id}/invoices`),
 };
 
 export const itemsAPI = {
   getAll: () => api.get('/items'),
   create: (data) => api.post('/items', data),
+  updateStatus: (code, is_active) => api.patch(`/items/${code}/status`, { is_active }),
 };
 
 export const invoicesAPI = {
@@ -23,3 +25,4 @@ export const invoicesAPI = {
 };
 
 export default api;
+
